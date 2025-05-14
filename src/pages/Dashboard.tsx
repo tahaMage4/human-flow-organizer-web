@@ -2,27 +2,31 @@
 import React from 'react';
 import { useHR } from '@/context/HRContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { UserIcon, FolderIcon, AlertCircleIcon, CheckCircleIcon, CalendarIcon } from 'lucide-react';
+import { UserIcon, FolderIcon, CheckCircleIcon, AlertCircleIcon, CalendarIcon, TrendingUpIcon } from 'lucide-react';
 
 const StatCard = ({ 
   title, 
   value, 
   description, 
-  icon: Icon 
+  icon: Icon,
+  className = ""
 }: { 
   title: string; 
   value: number | string; 
   description?: string; 
-  icon: React.ElementType 
+  icon: React.ElementType;
+  className?: string;
 }) => (
-  <Card>
+  <Card className={`overflow-hidden ${className}`}>
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
       <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      <Icon className="h-4 w-4 text-hr-primary" />
+      <div className="rounded-full bg-hr-light p-2">
+        <Icon className="h-4 w-4 text-hr-primary" />
+      </div>
     </CardHeader>
     <CardContent>
       <div className="text-2xl font-bold">{value}</div>
-      {description && <p className="text-xs text-muted-foreground">{description}</p>}
+      {description && <p className="text-xs text-muted-foreground mt-1">{description}</p>}
     </CardContent>
   </Card>
 );
@@ -75,8 +79,13 @@ const Dashboard = () => {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Department Overview</CardTitle>
-            <CardDescription>Employee distribution across departments</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Department Overview</CardTitle>
+                <CardDescription>Employee distribution across departments</CardDescription>
+              </div>
+              <TrendingUpIcon className="h-4 w-4 text-hr-primary" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -90,9 +99,9 @@ const Dashboard = () => {
                       <span className="text-sm font-medium">{dept.name}</span>
                       <span className="text-sm text-muted-foreground">{deptEmployees} employees</span>
                     </div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-hr-primary rounded-full"
+                        className="h-full bg-hr-primary rounded-full transition-all"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -106,9 +115,9 @@ const Dashboard = () => {
                     <span className="text-sm font-medium">Unassigned</span>
                     <span className="text-sm text-muted-foreground">{unassignedEmployees} employees</span>
                   </div>
-                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-slate-400 rounded-full"
+                      className="h-full bg-muted-foreground rounded-full"
                       style={{ width: `${(unassignedEmployees / totalEmployees) * 100}%` }}
                     />
                   </div>
@@ -120,57 +129,61 @@ const Dashboard = () => {
         
         <Card>
           <CardHeader>
-            <CardTitle>Availability Overview</CardTitle>
-            <CardDescription>Today's employee availability</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Availability Overview</CardTitle>
+                <CardDescription>Today's employee availability</CardDescription>
+              </div>
+              <CalendarIcon className="h-4 w-4 text-hr-primary" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-center h-60">
               {availableToday + unavailableToday > 0 ? (
                 <div className="relative inline-flex items-center justify-center">
-                  <svg className="w-32 h-32">
+                  <svg className="w-36 h-36 -rotate-90">
                     <circle
-                      className="text-slate-100"
-                      strokeWidth="10"
+                      className="text-muted"
+                      strokeWidth="12"
                       stroke="currentColor"
                       fill="transparent"
-                      r="55"
-                      cx="64"
-                      cy="64"
+                      r="60"
+                      cx="72"
+                      cy="72"
                     />
                     <circle
                       className="text-hr-primary"
-                      strokeWidth="10"
-                      strokeDasharray={2 * Math.PI * 55}
+                      strokeWidth="12"
+                      strokeDasharray={2 * Math.PI * 60}
                       strokeDashoffset={
-                        2 * Math.PI * 55 * (1 - availableToday / (availableToday + unavailableToday))
+                        2 * Math.PI * 60 * (1 - availableToday / (availableToday + unavailableToday))
                       }
                       strokeLinecap="round"
                       stroke="currentColor"
                       fill="transparent"
-                      r="55"
-                      cx="64"
-                      cy="64"
+                      r="60"
+                      cx="72"
+                      cy="72"
                     />
                   </svg>
-                  <span className="absolute text-xl font-bold flex items-center">
-                    <CalendarIcon className="w-5 h-5 mr-1 text-hr-primary" />
+                  <span className="absolute text-xl font-bold flex items-center rotate-90">
                     {Math.round((availableToday / (availableToday + unavailableToday)) * 100)}%
                   </span>
                 </div>
               ) : (
-                <div className="text-center text-slate-500">
-                  <CalendarIcon className="w-12 h-12 mx-auto mb-2 text-slate-300" />
+                <div className="text-center text-muted-foreground">
+                  <CalendarIcon className="w-12 h-12 mx-auto mb-2 text-muted" />
                   <p>No availability data for today</p>
                 </div>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="grid grid-cols-2 gap-4 mt-6">
               <div className="flex items-center">
                 <div className="w-3 h-3 rounded-full bg-hr-primary mr-2" />
                 <span className="text-sm">Available ({availableToday})</span>
               </div>
               <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-slate-300 mr-2" />
+                <div className="w-3 h-3 rounded-full bg-muted mr-2" />
                 <span className="text-sm">Unavailable ({unavailableToday})</span>
               </div>
             </div>

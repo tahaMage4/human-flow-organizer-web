@@ -14,10 +14,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import AddEmployeeForm from './AddEmployeeForm';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const EmployeesPage = () => {
   const { employees, departments, getDepartmentById } = useHR();
@@ -41,11 +41,21 @@ const EmployeesPage = () => {
       employee.position.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Get initials for avatar
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="relative w-full sm:w-96">
-          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Search employees..."
             className="pl-10"
@@ -68,25 +78,32 @@ const EmployeesPage = () => {
         </Dialog>
       </div>
 
-      <div className="bg-white rounded-md shadow overflow-hidden">
+      <div className="rounded-md border bg-card shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[300px]">Name</TableHead>
+              <TableHead>Employee</TableHead>
               <TableHead>Position</TableHead>
               <TableHead className="hidden md:table-cell">Department</TableHead>
               <TableHead className="hidden lg:table-cell">Hire Date</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredEmployees.length > 0 ? (
               filteredEmployees.map((employee) => (
                 <TableRow key={employee.id}>
-                  <TableCell className="font-medium">
-                    <div>
-                      <div>{employee.name}</div>
-                      <div className="text-sm text-slate-500">{employee.email}</div>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-9 w-9">
+                        <AvatarFallback className="bg-hr-primary text-white">
+                          {getInitials(employee.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-medium">{employee.name}</div>
+                        <div className="text-sm text-muted-foreground">{employee.email}</div>
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>{employee.position}</TableCell>
@@ -96,13 +113,13 @@ const EmployeesPage = () => {
                         {getDepartmentById(employee.departmentId)?.name || "Unknown"}
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="bg-slate-100 text-slate-500 border-slate-200">
+                      <Badge variant="outline" className="bg-muted text-muted-foreground">
                         Unassigned
                       </Badge>
                     )}
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">{employee.hireDate}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
                     <Link to={`/employees/${employee.id}`}>
                       <Button variant="ghost" size="sm">
                         View
@@ -113,7 +130,7 @@ const EmployeesPage = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-slate-500">
+                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                   No employees found. {searchTerm && "Try adjusting your search."}
                 </TableCell>
               </TableRow>

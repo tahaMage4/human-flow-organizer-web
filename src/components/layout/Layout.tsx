@@ -1,8 +1,9 @@
 
 import React from 'react';
-import Sidebar from './Sidebar';
-import Header from './Header';
 import { Outlet, useLocation } from 'react-router-dom';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import AppSidebar from './AppSidebar';
+import Header from './Header';
 
 const Layout: React.FC = () => {
   const location = useLocation();
@@ -22,15 +23,17 @@ const Layout: React.FC = () => {
   };
   
   return (
-    <div className="hr-layout">
-      <Sidebar />
-      <div className="flex flex-col">
-        <Header title={getPageTitle()} />
-        <main className="main-content">
-          <Outlet />
-        </main>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <div className="flex flex-1 flex-col">
+          <Header title={getPageTitle()} />
+          <main className="flex-1 p-6">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
